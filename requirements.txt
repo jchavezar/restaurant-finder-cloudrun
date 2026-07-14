@@ -1,0 +1,11 @@
+a2a-sdk[http-server]>=0.3.0,<0.4.0
+antlr4-python3-runtime>=4.13.0,<4.14.0
+click>=8.1.8
+google-adk>=1.28.1
+google-genai>=1.27.0
+jsonschema>=4.26.0
+litellm>=1.83.7
+pydantic>=2.10.0
+python-dotenv>=1.1.0
+referencing>=0.37.0
+uvicorn>=0.40.0
