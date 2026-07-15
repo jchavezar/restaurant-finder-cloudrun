@@ -58,6 +58,152 @@ from a2ui.a2a.parts import parse_response_to_parts, stream_response_to_parts
 logger = logging.getLogger(__name__)
 
 
+def sanitize_ui_response_content(content: str, query: str) -> str:
+    """Post-process and sanitize the final UI JSON payload to ensure 100% correct images."""
+    import re
+    
+    # Curated premium fallbacks
+    UNSPLASH_FOOD_IMAGES = {
+        "mexican": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500&auto=format&fit=crop&q=80",
+        "italian": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=80",
+        "chinese": "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=500&auto=format&fit=crop&q=80",
+        "japanese": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&auto=format&fit=crop&q=80",
+        "sushi": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&auto=format&fit=crop&q=80",
+        "french": "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=500&auto=format&fit=crop&q=80",
+        "indian": "https://images.unsplash.com/photo-1585938338392-50a59970d8ee?w=500&auto=format&fit=crop&q=80",
+        "thai": "https://images.unsplash.com/photo-1559314809-0d155014e29e?w=500&auto=format&fit=crop&q=80",
+        "spanish": "https://images.unsplash.com/photo-1534080391025-a13093b3410e?w=500&auto=format&fit=crop&q=80",
+        "greek": "https://images.unsplash.com/photo-1534080391025-a13093b3410e?w=500&auto=format&fit=crop&q=80"
+    }
+    
+    query_lower = query.lower() if query else ""
+    detected_cuisine = "mexican"  # default fallback
+    for cuisine_key in UNSPLASH_FOOD_IMAGES.keys():
+        if cuisine_key in query_lower:
+            detected_cuisine = cuisine_key
+            break
+            
+    default_unsplash = UNSPLASH_FOOD_IMAGES.get(detected_cuisine)
+
+    def get_cuisine_images_pool(cuisine: str) -> list[str]:
+        cuisine_lower = cuisine.lower()
+        if "mexican" in cuisine_lower:
+            return [
+                "/static/lostacos.png",
+                "/static/cosme.png",
+                "/static/empellon.png",
+                "/static/casaenrique.png",
+                "/static/laesquina.png",
+            ]
+        elif "chinese" in cuisine_lower:
+            return [
+                "/static/shrimpchowmein.jpeg",
+                "/static/mapotofu.jpeg",
+                "/static/beefbroccoli.jpeg",
+                "/static/springrolls.jpeg",
+                "/static/kungpao.jpeg",
+                "/static/sweetsourpork.jpeg",
+                "/static/vegfriedrice.jpeg",
+            ]
+        elif "italian" in cuisine_lower:
+            return [
+                "/static/Spaghetti Carbonara.png",
+                "/static/classic tiramasu.png",
+                "/static/lasagna.png",
+                "/static/margharita.png",
+                "/static/saffron risotto.png",
+                "/static/italian1.png",
+                "/static/italian2.png",
+            ]
+        return []
+
+    def get_deterministic_image(restaurant_name: str, cuisine: str, fallback: str) -> str:
+        pool = get_cuisine_images_pool(cuisine)
+        if not pool:
+            return fallback
+        import hashlib
+        hash_val = int(hashlib.md5(restaurant_name.lower().encode("utf-8")).hexdigest(), 16)
+        return pool[hash_val % len(pool)]
+
+    def get_real_google_place_photo(restaurant_name: str, address: str) -> str | None:
+        api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
+        if not api_key:
+            return None
+        import httpx
+        url = "https://places.googleapis.com/v1/places:searchText"
+        headers = {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": api_key,
+            "X-Goog-FieldMask": "places.photos"
+        }
+        body = {
+            "textQuery": f"{restaurant_name} {address}",
+            "maxResultCount": 1
+        }
+        try:
+            logger.info(f"Fetching Google Places photo for: {restaurant_name}...")
+            resp = httpx.post(url, json=body, headers=headers, timeout=5)
+            if resp.status_code == 200:
+                places = resp.json().get("places", [])
+                if places and "photos" in places[0]:
+                    photo_name = places[0]["photos"][0]["name"]
+                    photo_url = f"https://places.googleapis.com/v1/{photo_name}/media?maxWidthPx=800&key={api_key}"
+                    logger.info(f"Successfully retrieved Google Places photo for {restaurant_name}!")
+                    return photo_url
+        except Exception as e:
+            logger.error(f"Error fetching Google Places photo: {e}")
+        return None
+
+    def replace_json_block(match):
+        json_str = match.group(1)
+        try:
+            data = json.loads(json_str)
+            modified = False
+            for part in data:
+                if not isinstance(part, dict):
+                    continue
+                update_dm = part.get("updateDataModel", {})
+                if not isinstance(update_dm, dict):
+                    continue
+                path = update_dm.get("path", "")
+                val = update_dm.get("value")
+                if path == "/items" and isinstance(val, list):
+                    for item in val:
+                        if not isinstance(item, dict):
+                            continue
+                        name_lower = item.get("name", "").lower()
+                        # Strictly map to specific exact-matched high-res static images if they exist
+                        if "cosme" in name_lower:
+                            item["imageUrl"] = "/static/cosme.png"
+                        elif "casa enrique" in name_lower:
+                            item["imageUrl"] = "/static/casaenrique.png"
+                        elif "empellon" in name_lower or "empellón" in name_lower:
+                            item["imageUrl"] = "/static/empellon.png"
+                        elif "la esquina" in name_lower:
+                            item["imageUrl"] = "/static/laesquina.png"
+                        elif "los tacos" in name_lower:
+                            item["imageUrl"] = "/static/lostacos.png"
+                        else:
+                            # 1. Try to get a real photo dynamically from Google Places (New) API
+                            real_photo = get_real_google_place_photo(item.get("name", ""), item.get("address", ""))
+                            if real_photo:
+                                item["imageUrl"] = real_photo
+                            else:
+                                # 2. Assign unique, high-res local image from our pool deterministically as fallback
+                                item["imageUrl"] = get_deterministic_image(
+                                    item.get("name", ""), detected_cuisine, default_unsplash
+                                )
+                        modified = True
+            if modified:
+                return f"<a2ui-json>{json.dumps(data)}</a2ui-json>"
+        except Exception as e:
+            logger.error(f"Failed to post-sanitize JSON: {e}")
+        return match.group(0)
+
+    # Replace <a2ui-json>...</a2ui-json> blocks
+    return re.sub(r'<a2ui-json>(.*?)</a2ui-json>', replace_json_block, content, flags=re.DOTALL)
+
+
 class RestaurantAgent:
     """An agent that finds restaurants based on user criteria."""
 
@@ -304,6 +450,8 @@ class RestaurantAgent:
                     }
 
             final_response_content = "".join(full_content_list)
+            if ui_version:
+                final_response_content = sanitize_ui_response_content(final_response_content, query)
 
             is_valid = False
             error_message = ""

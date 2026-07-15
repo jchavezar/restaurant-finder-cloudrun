@@ -1,6 +1,7 @@
 [
   {
     "name": "Xi'an Famous Foods",
+    "cuisine": "Chinese",
     "detail": "Spicy and savory hand-pulled noodles.",
     "imageUrl": "http://localhost:10002/static/shrimpchowmein.jpeg",
     "rating": "★★★★☆",
@@ -9,6 +10,7 @@
   },
   {
     "name": "Han Dynasty",
+    "cuisine": "Chinese",
     "detail": "Authentic Szechuan cuisine.",
     "imageUrl": "http://localhost:10002/static/mapotofu.jpeg",
     "rating": "★★★★☆",
@@ -17,6 +19,7 @@
   },
   {
     "name": "RedFarm",
+    "cuisine": "Chinese",
     "detail": "Modern Chinese with a farm-to-table approach.",
     "imageUrl": "http://localhost:10002/static/beefbroccoli.jpeg",
     "rating": "★★★★☆",
@@ -25,6 +28,7 @@
   },
   {
     "name": "Mott 32",
+    "cuisine": "Chinese",
     "detail": "Upscale Cantonese dining.",
     "imageUrl": "http://localhost:10002/static/springrolls.jpeg",
     "rating": "★★★★★",
@@ -33,6 +37,7 @@
   },
   {
     "name": "Hwa Yuan Szechuan",
+    "cuisine": "Chinese",
     "detail": "Famous for its cold noodles with sesame sauce.",
     "imageUrl": "http://localhost:10002/static/kungpao.jpeg",
     "rating": "★★★★☆",
@@ -41,6 +46,7 @@
   },
   {
     "name": "Cafe China",
+    "cuisine": "Chinese",
     "detail": "Szechuan food in a 1930s Shanghai setting.",
     "imageUrl": "http://localhost:10002/static/mapotofu.jpeg",
     "rating": "★★★★☆",
@@ -49,6 +55,7 @@
   },
   {
     "name": "Philippe Chow",
+    "cuisine": "Chinese",
     "detail": "High-end Beijing-style cuisine.",
     "imageUrl": "http://localhost:10002/static/beefbroccoli.jpeg",
     "rating": "★★★★☆",
@@ -57,10 +64,56 @@
   },
   {
     "name": "Chinese Tuxedo",
+    "cuisine": "Chinese",
     "detail": "Contemporary Chinese in a former opera house.",
     "imageUrl": "http://localhost:10002/static/mapotofu.jpeg",
     "rating": "★★★★☆",
     "infoLink": "[More Info](https://chinesetuxedo.com/)",
     "address": "5 Doyers St, New York, NY 10013"
+  },
+  {
+    "name": "Cosme",
+    "cuisine": "Mexican",
+    "detail": "Contemporary, world-renowned Mexican cuisine using local, artisanal ingredients.",
+    "imageUrl": "http://localhost:10002/static/cosme.png",
+    "rating": "★★★★★",
+    "infoLink": "[More Info](https://www.cosmenyc.com/)",
+    "address": "35 E 21st St, New York, NY 10010"
+  },
+  {
+    "name": "Los Tacos No. 1",
+    "cuisine": "Mexican",
+    "detail": "Famous, authentic street-style Mexican tacos served in a bustling Chelsea Market standing-room stall.",
+    "imageUrl": "http://localhost:10002/static/lostacos.png",
+    "rating": "★★★★★",
+    "infoLink": "[More Info](https://www.lostacos1.com/)",
+    "address": "75 9th Ave, New York, NY 10011"
+  },
+  {
+    "name": "Empellón",
+    "cuisine": "Mexican",
+    "detail": "Creative, upscale Mexican dishes, unique tacos, and an extensive list of premium mezcals.",
+    "imageUrl": "http://localhost:10002/static/empellon.png",
+    "rating": "★★★★☆",
+    "infoLink": "[More Info](https://www.empellon.com/)",
+    "address": "510 Madison Ave, New York, NY 10022"
+  },
+  {
+    "name": "Casa Enrique",
+    "cuisine": "Mexican",
+    "detail": "Michelin-starred restaurant offering acclaimed, traditional Chiapas-style Mexican dishes.",
+    "imageUrl": "http://localhost:10002/static/casaenrique.png",
+    "rating": "★★★★★",
+    "infoLink": "[More Info](https://www.casaenriquenyc.com/)",
+    "address": "5-48 49th Ave, Long Island City, NY 11101"
+  },
+  {
+    "name": "La Esquina",
+    "cuisine": "Mexican",
+    "detail": "Vibrant and highly stylish secret subterranean brasserie serving gourmet street-style Mexican eats.",
+    "imageUrl": "http://localhost:10002/static/laesquina.png",
+    "rating": "★★★★☆",
+    "infoLink": "[More Info](https://www.esquinanyc.com/)",
+    "address": "114 Kenmare St, New York, NY 10012"
   }
 ]
