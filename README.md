@@ -5,10 +5,9 @@ This directory contains the complete Restaurant Finder deployment. It includes t
 ## Screenshots
 
 <p align="center">
-  <img src="doc/restaurant-finder1.png" alt="Restaurant Finder query" width="24%" />
-  <img src="doc/restaurant-finder2.png" alt="Generated restaurant results" width="24%" />
-  <img src="doc/restaurant-finder3.png" alt="Restaurant reservation form" width="24%" />
-  <img src="doc/restaurant-finder4.png" alt="Restaurant results with the A2UI JSON inspector" width="24%" />
+  <img src="doc/restaurant-finder1.png" alt="Restaurant Finder query" width="32%" />
+  <img src="doc/restaurant-finder3.png" alt="Restaurant reservation form" width="32%" />
+  <img src="doc/restaurant-finder4.png" alt="Restaurant results with the A2UI JSON inspector" width="32%" />
 </p>
 
 ## How the app and agent work
